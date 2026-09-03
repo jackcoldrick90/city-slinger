@@ -32,6 +32,7 @@ const scoreForm = document.querySelector('#scoreForm');
 const scoreName = document.querySelector('#scoreName');
 const scoreStatus = document.querySelector('#scoreStatus');
 const leaderboardList = document.querySelector('#leaderboard');
+const startLeaderboardList = document.querySelector('#startLeaderboard');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setClearColor(W.FOG_COLOR);
 // ACES rolls the highlights off instead of clipping them, which is what keeps a
@@ -507,22 +508,25 @@ function die(now) {
  * it -- `npm run dev` serves static files only, with no `/api` route behind
  * it, so every fetch here is expected to fail there. Every failure is caught
  * and swallowed silently for exactly that reason.
+ *
+ * Shared by two lists: the start screen's, loaded once at startup, and the
+ * death screen's, reloaded after every death and every submitted score.
  */
-async function loadLeaderboard() {
+async function loadLeaderboard(target) {
   try {
     const res = await fetch('/api/scores');
     if (!res.ok) return;
-    renderLeaderboard(await res.json());
+    renderLeaderboard(target, await res.json());
   } catch {
-    // No API locally, or genuinely offline -- the death screen still works.
+    // No API locally, or genuinely offline -- the rest of the screen still works.
   }
 }
 
 /** Built with real DOM nodes and `textContent`, never `innerHTML` -- a
  * player's own submitted name is untrusted text shown to every other player,
  * and this is what keeps one from being able to inject markup into it. */
-function renderLeaderboard(rows) {
-  leaderboardList.textContent = '';
+function renderLeaderboard(target, rows) {
+  target.textContent = '';
   rows.forEach((row, i) => {
     const li = document.createElement('li');
     const rank = document.createElement('span');
@@ -535,7 +539,7 @@ function renderLeaderboard(rows) {
     dist.className = 'lb-dist';
     dist.textContent = `${row.distance}m`;
     li.append(rank, name, dist);
-    leaderboardList.appendChild(li);
+    target.appendChild(li);
   });
 }
 
@@ -548,7 +552,7 @@ function showDeathScreen() {
   scoreName.value = '';
   scoreStatus.hidden = true;
   deathOverlay.hidden = false;
-  loadLeaderboard();
+  loadLeaderboard(leaderboardList);
 }
 
 /** Hide the death screen and start the next life. */
@@ -683,11 +687,13 @@ scoreForm.addEventListener('submit', async (e) => {
       }),
     });
     scoreStatus.textContent = res.ok ? 'on the board.' : 'could not submit that score.';
-    if (res.ok) loadLeaderboard();
+    if (res.ok) loadLeaderboard(leaderboardList);
   } catch {
     scoreStatus.textContent = 'could not reach the leaderboard.';
   }
 });
+
+loadLeaderboard(startLeaderboardList);
 
 beginRun(0);
 city.update(follow.x);

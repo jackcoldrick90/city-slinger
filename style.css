@@ -75,6 +75,11 @@ html, body {
 }
 .overlay[hidden] { display: none; }
 
+/* Two panels side by side on the start screen: the game on the left, the
+   leaderboard on the right. One flex row rather than restyling `.overlay`
+   itself, since the death screen still wants a single centred panel. */
+.start-layout { display: flex; gap: 2.5rem; align-items: flex-start; }
+
 .panel { max-width: 30rem; padding: 2rem; text-align: center; }
 .panel h1 {
   margin: 0 0 0.5rem;
@@ -82,7 +87,26 @@ html, body {
   letter-spacing: -0.03em;
   color: #e8404f;
 }
+.panel h2 {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  font-weight: 600;
+}
 .lede { color: var(--dim); margin: 0 0 1.75rem; }
+
+.leaderboard-panel { max-width: 18rem; padding-top: 2rem; }
+.leaderboard-panel .leaderboard {
+  min-width: 15rem;
+  margin: 0;
+}
+.leaderboard-panel .leaderboard:empty::after {
+  content: 'No runs yet — be the first.';
+  display: block;
+  color: var(--dim);
+  padding: 0.5rem 0.4rem;
+}
 
 .modes { display: flex; gap: 0.6rem; justify-content: center; }
 
@@ -170,4 +194,6 @@ html, body {
 @media (max-width: 700px) {
   .debug { top: max(5.5rem, calc(env(safe-area-inset-top) + 4.5rem)); font-size: 10px; }
   #dist { font-size: 1.5rem; }
+  .start-layout { flex-direction: column; align-items: center; max-height: 90vh; overflow-y: auto; }
+  .leaderboard-panel { padding-top: 0; }
 }

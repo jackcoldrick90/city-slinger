@@ -31,19 +31,25 @@
   <pre id="debug" class="debug" hidden></pre>
 
   <div class="overlay" id="overlay">
-    <div class="panel">
-      <h1>City&nbsp;Slinger</h1>
-      <p class="lede">Click a building to fire a web. Hold to reel in, let go to fly.
-        The arc you let go on is the arc you keep. Collect pizza for points, and
-        keep an eye on your web — you only get eight webs before you need a refill.
-        Drones fly in against you — touch one and it's over.</p>
-      <div class="modes">
-        <button class="mode" data-mode="day">DAY</button>
-        <button class="mode" data-mode="night">NIGHT</button>
-        <button class="mode" data-mode="cycle" autofocus>CYCLE</button>
+    <div class="start-layout">
+      <div class="panel">
+        <h1>City&nbsp;Slinger</h1>
+        <p class="lede">Click a building to fire a web. Hold to reel in, let go to fly.
+          The arc you let go on is the arc you keep. Collect pizza for points, and
+          keep an eye on your web — you only get eight webs before you need a refill.
+          Drones fly in against you — touch one and it's over.</p>
+        <div class="modes">
+          <button class="mode" data-mode="day">DAY</button>
+          <button class="mode" data-mode="night">NIGHT</button>
+          <button class="mode" data-mode="cycle" autofocus>CYCLE</button>
+        </div>
+        <p class="keys"><b>hold</b> reel in &middot; <b>R</b> restart &middot;
+          <b>`</b> debug &middot; <b>P</b> probe &middot; <b>B</b> bloom &middot; <b>M</b> blur &middot; <b>T</b> time</p>
       </div>
-      <p class="keys"><b>hold</b> reel in &middot; <b>R</b> restart &middot;
-        <b>`</b> debug &middot; <b>P</b> probe &middot; <b>B</b> bloom &middot; <b>M</b> blur &middot; <b>T</b> time</p>
+      <div class="panel leaderboard-panel">
+        <h2>Leaderboard</h2>
+        <ol id="startLeaderboard" class="leaderboard"></ol>
+      </div>
     </div>
   </div>
 
