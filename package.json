@@ -1,0 +1,21 @@
+{
+  "name": "city-slinger",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "City Slinger: a Three.js web-slinging side-scroller: click a building, swing, let go.",
+  "scripts": {
+    "dev": "python3 tools/serve.py 5175",
+    "vendor": "node tools/vendor_three.mjs",
+    "check": "node tools/check_anchors.mjs",
+    "test": "node --test \"test/*.test.mjs\"",
+    "anchors": "node tools/anchor_reach.mjs"
+  },
+  "devDependencies": {
+    "three": "^0.185.1"
+  },
+  "dependencies": {
+    "@vercel/functions": "^3.9.5",
+    "pg": "^8.23.0"
+  }
+}

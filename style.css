@@ -1,0 +1,173 @@
+:root {
+  --ink: #dfe6ef;
+  --dim: #7f8ba3;
+  --ground: #06070f;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--ground);
+  color: var(--ink);
+  font: 14px/1.5 ui-monospace, "SF Mono", Menlo, monospace;
+  overflow: hidden;
+}
+
+/* Without this the browser claims a drag as a page scroll and the pointerup
+   never arrives -- on touch the player ends up welded to a web they let go of. */
+#view {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.hud {
+  position: fixed;
+  top: max(1rem, env(safe-area-inset-top));
+  left: max(1rem, env(safe-area-inset-left));
+  pointer-events: none;
+  text-shadow: 0 1px 3px #000;
+}
+#dist { font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; }
+#best { color: var(--dim); }
+#pizzas { margin-top: 0.5rem; color: #e8a13c; }
+#fuel { color: #8ad4ff; letter-spacing: 0.05em; }
+#fuel.low { color: #e8404f; }
+
+.hint {
+  position: fixed;
+  bottom: max(2rem, env(safe-area-inset-bottom));
+  left: 0; right: 0;
+  margin: 0;
+  text-align: center;
+  color: var(--dim);
+  pointer-events: none;
+  text-shadow: 0 1px 3px #000;
+}
+
+.debug {
+  position: fixed;
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  background: #000a;
+  border: 1px solid #ffffff1a;
+  border-radius: 4px;
+  color: #8ad4ff;
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre;
+  pointer-events: none;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at center, #06070fcc, #06070fee);
+  backdrop-filter: blur(2px);
+}
+.overlay[hidden] { display: none; }
+
+.panel { max-width: 30rem; padding: 2rem; text-align: center; }
+.panel h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2.5rem;
+  letter-spacing: -0.03em;
+  color: #e8404f;
+}
+.lede { color: var(--dim); margin: 0 0 1.75rem; }
+
+.modes { display: flex; gap: 0.6rem; justify-content: center; }
+
+.mode {
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  padding: 0.8rem 1.6rem;
+  color: var(--dim);
+  background: transparent;
+  border: 1px solid #3a4258;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.mode:hover { color: var(--ink); border-color: #55607a; }
+.mode:focus-visible { outline: 2px solid #8ad4ff; outline-offset: 3px; }
+
+/* Cycle is the mode this project was built to show off -- a real day/night
+   cycle you fall through as you swing -- so it carries the accent colour the
+   single SWING button used to have. Day and Night are the fixed-light option
+   for anyone who wants to practise without the light changing under them. */
+.mode[data-mode="cycle"] {
+  color: var(--ink);
+  background: #c0202c;
+  border-color: #c0202c;
+}
+.mode[data-mode="cycle"]:hover { background: #d82a38; border-color: #d82a38; }
+
+/* The death screen's one button, deliberately not `.mode` -- that class is
+   wired to the start screen's own click handler, which hides the wrong
+   overlay and never calls beginRun. Same look as the cycle button, borrowed
+   rather than shared, since the two buttons do different things. */
+.restart {
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  padding: 0.8rem 1.6rem;
+  color: var(--ink);
+  background: #c0202c;
+  border: 1px solid #c0202c;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.restart:hover { background: #d82a38; border-color: #d82a38; }
+.restart:focus-visible { outline: 2px solid #8ad4ff; outline-offset: 3px; }
+
+.score-form { display: flex; gap: 0.6rem; justify-content: center; margin: 0 0 1rem; }
+.score-form input {
+  font: inherit;
+  letter-spacing: 0.1em;
+  width: 10rem;
+  padding: 0.8rem 1rem;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid #3a4258;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.score-form input:focus-visible { outline: 2px solid #8ad4ff; outline-offset: 1px; }
+.score-status { color: var(--dim); margin: -0.5rem 0 1rem; }
+
+.leaderboard {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  max-height: 11rem;
+  overflow-y: auto;
+  text-align: left;
+  font-size: 13px;
+}
+.leaderboard li {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.25rem 0.4rem;
+  border-bottom: 1px solid #ffffff0f;
+}
+.leaderboard .rank { color: var(--dim); width: 1.5rem; flex: none; }
+.leaderboard .lb-name { flex: 1; letter-spacing: 0.05em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.leaderboard .lb-dist { color: var(--dim); flex: none; }
+
+.keys { margin: 1.75rem 0 0; color: #55607a; font-size: 12px; }
+.keys b { color: var(--dim); font-weight: 600; }
+
+/* The overlay is wide and the score sits under it on a phone. */
+@media (max-width: 700px) {
+  .debug { top: max(5.5rem, calc(env(safe-area-inset-top) + 4.5rem)); font-size: 10px; }
+  #dist { font-size: 1.5rem; }
+}

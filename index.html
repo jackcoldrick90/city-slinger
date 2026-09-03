@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>City Slinger — a three.js experiment</title>
+<link rel="stylesheet" href="style.css">
+<!-- three.js is vendored, not fetched from a CDN: the page works offline, has
+     no third-party dependency at runtime, and the version can never move under
+     it. `npm run vendor` refreshes it from node_modules. -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "/vendor/three/three.module.js",
+    "three/addons/": "/vendor/three/addons/"
+  }
+}
+</script>
+</head>
+<body>
+  <canvas id="view"></canvas>
+
+  <div class="hud">
+    <div id="dist">0 m</div>
+    <div id="best">best 0 m</div>
+    <div id="pizzas">pizza 0 · best 0</div>
+    <div id="fuel">web ●●●●●●●●</div>
+  </div>
+
+  <p id="hint" class="hint" hidden></p>
+  <pre id="debug" class="debug" hidden></pre>
+
+  <div class="overlay" id="overlay">
+    <div class="panel">
+      <h1>City&nbsp;Slinger</h1>
+      <p class="lede">Click a building to fire a web. Hold to reel in, let go to fly.
+        The arc you let go on is the arc you keep. Collect pizza for points, and
+        keep an eye on your web — you only get eight webs before you need a refill.
+        Drones fly in against you — touch one and it's over.</p>
+      <div class="modes">
+        <button class="mode" data-mode="day">DAY</button>
+        <button class="mode" data-mode="night">NIGHT</button>
+        <button class="mode" data-mode="cycle" autofocus>CYCLE</button>
+      </div>
+      <p class="keys"><b>hold</b> reel in &middot; <b>R</b> restart &middot;
+        <b>`</b> debug &middot; <b>P</b> probe &middot; <b>B</b> bloom &middot; <b>M</b> blur &middot; <b>T</b> time</p>
+    </div>
+  </div>
+
+  <div class="overlay" id="deathOverlay" hidden>
+    <div class="panel">
+      <h1>Run over</h1>
+      <p class="lede" id="deathSummary">You reached 0m.</p>
+      <form id="scoreForm" class="score-form">
+        <input id="scoreName" maxlength="12" placeholder="YOUR NAME" autocomplete="off" autofocus>
+        <button class="restart" type="submit">SUBMIT</button>
+      </form>
+      <p id="scoreStatus" class="score-status" hidden></p>
+      <ol id="leaderboard" class="leaderboard"></ol>
+      <div class="modes">
+        <button class="restart" id="restartBtn">RESTART</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/game.js"></script>
+</body>
+</html>
