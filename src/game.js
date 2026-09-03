@@ -503,6 +503,18 @@ function die(now) {
   hud.setHint('');
 }
 
+const LEADERBOARD_CACHE_KEY = 'leaderboard-cache';
+
+/** Whatever the last successful fetch returned, or null on a first-ever visit. */
+function cachedLeaderboard() {
+  try {
+    const raw = localStorage.getItem(LEADERBOARD_CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null; // private browsing, storage disabled, or corrupt JSON
+  }
+}
+
 /**
  * The leaderboard is decoration on top of the game, never load-bearing for
  * it -- `npm run dev` serves static files only, with no `/api` route behind
@@ -511,14 +523,27 @@ function die(now) {
  *
  * Shared by two lists: the start screen's, loaded once at startup, and the
  * death screen's, reloaded after every death and every submitted score.
+ *
+ * A fresh `fetch` is a round trip plus whatever a scale-to-zero Neon compute
+ * takes to wake up -- visible as a blank list for a beat before it fills in,
+ * which is what read as "not instant". The cached copy from the *last*
+ * successful fetch renders synchronously, before that request has even gone
+ * out, so only the very first visit a browser ever makes is not instant.
  */
 async function loadLeaderboard(target) {
+  const cached = cachedLeaderboard();
+  if (cached) renderLeaderboard(target, cached);
+
   try {
     const res = await fetch('/api/scores');
     if (!res.ok) return;
-    renderLeaderboard(target, await res.json());
+    const rows = await res.json();
+    renderLeaderboard(target, rows);
+    try { localStorage.setItem(LEADERBOARD_CACHE_KEY, JSON.stringify(rows)); } catch {
+      // Storage can be full or disabled -- the freshly rendered list stands either way.
+    }
   } catch {
-    // No API locally, or genuinely offline -- the rest of the screen still works.
+    // No API locally, or genuinely offline -- the cached render above stands.
   }
 }
 
